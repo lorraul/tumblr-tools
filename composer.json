@@ -1,0 +1,12 @@
+{
+    "name": "raul01/tumblr-tools",
+    "authors": [
+        {
+            "name": "lorraul",
+            "email": "lorraul@gmail.com"
+        }
+    ],
+    "require": {
+        "tumblr/tumblr": "^0.3.0"
+    }
+}
