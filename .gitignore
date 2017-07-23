@@ -3,3 +3,4 @@ node_modules/
 temp/
 vendor/
 sessions/
+config2.php
