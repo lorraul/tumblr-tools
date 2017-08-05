@@ -1,5 +1,4 @@
 <?php
-
 require __DIR__ . '/vendor/autoload.php';
 require 'config.php';
 
@@ -24,36 +23,44 @@ if(empty(trim($params["tag"]))){
     die("Tag not specified!");
 }
 
-$deletePosts = array_filter($client->getBlogPosts($params["blog"], $options = null)->posts, function($post) use ($params){
-    return in_array($params["tag"], $post->tags);
-});
+$deletePosts = $client->getBlogPosts($params["blog"], array('tag' => $params["tag"]))->posts;
 
+//apply param criterias
+//filtered post ids
+$i = 0;
 $toDelete= array();
 foreach($deletePosts as $post){
     if (date_diff(date_create($post->date), new DateTime())->format('%a') >= $params["keep_time"])
         array_push($toDelete, array("id"=>$post->id, "reblog_key"=>$post->reblog_key));
+    //apply limit param
+    if (++$i >= $params["limit"]) break;
 }
 
-$i = 0;
+//filtered posts with details
 $deletedPosts = array();
 foreach ($toDelete as $post) {
-    $client->deletePost($params["blog"], $post["id"], $post["reblog_key"]);
     $deletedPosts = array_merge($deletedPosts,array_filter(
         $deletePosts,
         function ($e) use ($post) {
             return $e->id == $post["id"];
         }
     ));
-    //apply limit param
-    if (++$i >= $params["limit"]) break;
 }
+$toDeleteString = htmlentities(serialize($toDelete));
 
-/*echo "<pre>";
-print_r($deletedPosts);
-echo "</pre><hr>";*/
+//delete confirmation
+if (!isset($_POST['toDelete'])) {
+echo <<<EOL
+<form action="bulk-delete-m.php" method="post">
+<input type="hidden" name="toDelete" value="$toDeleteString" />
+<input type="submit" name="submit" id="submit" class="button" value="Delete posts"/>
+</form>
+EOL;
+echo "<hr><h3>Posts to be deleted:</h3>";
+}
+else echo "<hr><h3>Posts deleted:</h3>";
 
-//display deleted posts
-echo "<h3>Posts deleted:</h3>";
+//display posts
 foreach($deletedPosts as $post) {
 
     $post->time_ago = date_diff(date_create($post->date), new DateTime())->format('%a');
@@ -61,6 +68,7 @@ foreach($deletedPosts as $post) {
     switch ($post->type) {
     case 'text':
         echo <<<EOL
+Url: <a href="$post->post_url">See post</a><br>
 Id: {$post->id}<br>
 Time: {$post->date}<br>
 Posted: {$post->time_ago} days ago<br>
@@ -72,6 +80,7 @@ EOL;
         break;
     case 'photo':
         echo <<<EOL
+Url: <a href="$post->post_url">See post</a><br>
 Id: {$post->id}<br>
 Time: {$post->date}<br>
 Posted: {$post->time_ago} days ago<br>
@@ -82,6 +91,7 @@ EOL;
         break;
     case 'link':
         echo <<<EOL
+Url: <a href="$post->post_url">See post</a><br>
 Id: {$post->id}<br>
 Time: {$post->date}<br>
 Posted: {$post->time_ago} days ago<br>
@@ -92,4 +102,14 @@ URL: {$post->url}
 EOL;
         break;
     }
+}
+
+//after delete confirmation ------------------------------------------
+if (isset($_POST['toDelete'])) {
+    $toDelete = unserialize($_POST['toDelete']);
+    foreach ($toDelete as $post) {
+        //delete posts
+        $client->deletePost($params["blog"], $post["id"], $post["reblog_key"]);
+    }
+    print_r($toDelete);
 }
