@@ -23,7 +23,7 @@ if(empty(trim($params["tag"]))){
     die("Tag not specified!");
 }
 
-$deletePosts = $client->getBlogPosts($params["blog"], array('tag' => $params["tag"]))->posts;
+$deletePosts = $client->getBlogPosts($params["blog"], array("tag" => $params["tag"]))->posts;
 
 //apply param criterias
 //filtered post ids

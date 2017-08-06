@@ -23,7 +23,7 @@ if(empty(trim($params["tag"]))){
     die("Tag not specified!");
 }
 
-$deletePosts = $client->getBlogPosts($params["blog"], array('tag' => $params["tag"]))->posts;
+$deletePosts = $client->getBlogPosts($params["blog"], array("tag" => $params["tag"]))->posts;
 
 //apply param criterias
 //filtered post ids
@@ -60,49 +60,7 @@ echo "<hr><h3>Posts to be deleted:</h3>";
 }
 else echo "<hr><h3>Posts deleted:</h3>";
 
-//display posts
-foreach($deletedPosts as $post) {
-
-    $post->time_ago = date_diff(date_create($post->date), new DateTime())->format('%a');
-    
-    switch ($post->type) {
-    case 'text':
-        echo <<<EOL
-Url: <a href="$post->post_url">See post</a><br>
-Id: {$post->id}<br>
-Time: {$post->date}<br>
-Posted: {$post->time_ago} days ago<br>
-Type: {$post->type}<br>
-Title: {$post->title}<br>
-Body: {$post->body}
-<hr>
-EOL;
-        break;
-    case 'photo':
-        echo <<<EOL
-Url: <a href="$post->post_url">See post</a><br>
-Id: {$post->id}<br>
-Time: {$post->date}<br>
-Posted: {$post->time_ago} days ago<br>
-Type: {$post->type}<br>
-Caption: {$post->caption}
-<hr>
-EOL;
-        break;
-    case 'link':
-        echo <<<EOL
-Url: <a href="$post->post_url">See post</a><br>
-Id: {$post->id}<br>
-Time: {$post->date}<br>
-Posted: {$post->time_ago} days ago<br>
-Type: {$post->type}<br>
-Title: {$post->title}<br>
-URL: {$post->url}
-<hr>
-EOL;
-        break;
-    }
-}
+display_posts($deletedPosts);
 
 //after delete confirmation ------------------------------------------
 if (isset($_POST['toDelete'])) {
