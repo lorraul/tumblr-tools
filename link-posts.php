@@ -22,7 +22,7 @@ if(!in_array($params["blog"], $blog_names)){
 }
 
 $allPosts = array();
-getPosts($params["offset"]); // recursive, start with offset 0
+getPosts($params["offset"], $params["offset"]+$params["limit"]);
 
 $postToLink;
 
@@ -65,19 +65,3 @@ $client->createPost($params["blog"], array(
     "description" => "As of ".date("F j, Y", strtotime($postToLink->date)),
     "thumbnail" => previewPhotoUrl($postToLink)
 ));
-
-function previewPhotoUrl($post){
-    if(count($post->photos)>0)
-        foreach ($post->photos[0]->alt_sizes as $photoObject){
-            if ($photoObject->width == 250) return $photoObject->url;
-        }
-    return "http://via.placeholder.com/250x150";
-}
-
-function getPosts($offset){
-    global $allPosts, $client, $params;
-    if($offset >= $params["offset"]+$params["limit"]) return null; //maximum requests limited to 360
-    $allPosts = array_merge($allPosts, $client->getBlogPosts($params["blog"], array("offset" => $offset, "filter" => "text"))->posts);
-    $offset += 20;
-    getPosts($offset);
-}

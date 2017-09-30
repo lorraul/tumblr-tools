@@ -1,4 +1,21 @@
 <?php
+function getPosts($offset, $limitOffset){
+    global $allPosts, $client, $params;
+    if($offset >= $limitOffset) return null; //maximum requests limited to 360
+    $allPosts = array_merge($allPosts, $client->getBlogPosts($params["blog"], array("offset" => $offset, "filter" => "text"))->posts);    
+    if (!isset($params["period"]) || date_diff(date_create(end($allPosts)->date), new DateTime())->format('%a') < $params["period"]){
+        $offset += 20;
+        getPosts($offset, $limitOffset);
+    }
+}
+
+function previewPhotoUrl($post){
+    if(count($post->photos)>0)
+        foreach ($post->photos[0]->alt_sizes as $photoObject){
+            if ($photoObject->width == 250) return $photoObject->url;
+        }
+    return "http://via.placeholder.com/250x150";
+}
 
 function display_posts($posts){
     foreach($posts as $post) {

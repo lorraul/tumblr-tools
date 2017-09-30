@@ -25,7 +25,7 @@ if(empty(trim($params["period"]))){
 }
 
 $allPosts = array();
-getPosts(0); // recursive, start with offset 0
+getPosts(0, 7200); // recursive, start with offset 0
 
 $popularPosts = array();
 
@@ -112,22 +112,4 @@ if (isset($_POST['listBody'])) {
         "body" => $_POST['listBody']
     ));
     echo $_POST['listBody'];
-}
-
-function getPosts($offset){
-    global $allPosts, $client, $params;
-    if($offset > 7200) return null; //maximum requests limited to 360
-    $allPosts = array_merge($allPosts, $client->getBlogPosts($params["blog"], array("offset" => $offset))->posts);
-    if (date_diff(date_create(end($allPosts)->date), new DateTime())->format('%a') < $params["period"]){
-        $offset += 20;
-        getPosts($offset);
-    }
-}
-
-function previewPhotoUrl($post){
-    if(count($post->photos)>0)
-        foreach ($post->photos[0]->alt_sizes as $photoObject){
-            if ($photoObject->width == 250) return $photoObject->url;
-        }
-    return "http://via.placeholder.com/250x150";
 }
