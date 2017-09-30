@@ -69,7 +69,7 @@ foreach($allPosts as $post) {
 //create list to publish
 $listBody = "<p>Most popular posts in the last ".$params["period"]." days based on the number of notes:</p>\n";
 foreach ($popularPosts as $post) {
-    $listBody .= "<p>\n<a href=\"".$post->post_url."\">";
+    $listBody .= "<p>\n<a href=\"".$post->post_url."?utm_source=tumblr&utm_medium=pp\">";
     if(isset($post->caption)){
         $listBody .= mb_strimwidth(strip_tags($post->caption),0,80,"...");
     }

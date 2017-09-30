@@ -61,7 +61,7 @@ $client->createPost($params["blog"], array(
     "state" => "queue",
     "tags" => "links",
     "title" => $postToLink->caption,
-    "url" => $postToLink->post_url,
+    "url" => $postToLink->post_url."?utm_source=tumblr&utm_medium=links",
     "description" => "As of ".date("F j, Y", strtotime($postToLink->date)),
     "thumbnail" => previewPhotoUrl($postToLink)
 ));
