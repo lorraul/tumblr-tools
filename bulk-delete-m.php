@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 require 'config.php';
+require 'common.php';
 
 //local params
 $params["blog"] = "";
@@ -23,7 +24,7 @@ if(empty(trim($params["tag"]))){
     die("Tag not specified!");
 }
 
-$deletePosts = $client->getBlogPosts($params["blog"], array("tag" => $params["tag"]))->posts;
+$deletePosts = $client->getBlogPosts($params["blog"], array("offset" => $params["keep_time"], "tag" => $params["tag"]))->posts;
 
 //apply param criterias
 //filtered post ids

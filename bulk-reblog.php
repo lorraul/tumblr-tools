@@ -8,6 +8,7 @@ $params["blog"] = "";
 $params["source_blog"] = "";
 $params["source_tag"] = "";
 //$params["publish_frequency"] = "daily";
+$params["delay"] = "1"; //delay first publish date, in days
 $params["publish_time"] = "";
 $params["tags"] = "";
 
@@ -26,7 +27,7 @@ if(!in_array($params["blog"], $blog_names)){
 $allPosts = $client->getBlogPosts($params["source_blog"], array("tag" => $params["source_tag"]))->posts;
 
 foreach($allPosts as $key=>$post) {
-    $publish_date = date("Y-m-d", strtotime("+ ".($key+1)." day"));
+    $publish_date = date("Y-m-d", strtotime("+ ".($key+$params["delay"])." day"));
     $client->reblogPost($params["blog"], $post->id, $post->reblog_key, array(
         "state" => "queue",
         "tags" => $params["tags"],
