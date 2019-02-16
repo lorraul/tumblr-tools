@@ -76,6 +76,7 @@ foreach ($popularPosts as $post) {
     else if(isset($post->title)){
         $listBody .= mb_strimwidth($post->title,0,50,"...");
     }
+    $listBody .= ' ('.$post->note_count.' notes)';
     $listBody .= "<br><br>\n";
     if ($post->type == "photo")
         $listBody .= "<img src=\"".previewPhotoUrl($post)."\"></a>\n</p>";
