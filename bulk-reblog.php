@@ -9,6 +9,7 @@ $params["source_blog"] = "";
 $params["source_tag"] = "";
 //$params["publish_frequency"] = "daily";
 $params["delay"] = "1"; //delay first publish date, in days
+$params["removePosts"] = 1; //remove n number of posts from the start
 $params["publish_time"] = "";
 $params["tags"] = "";
 
@@ -25,6 +26,12 @@ if(!in_array($params["blog"], $blog_names)){
 }
 
 $allPosts = $client->getBlogPosts($params["source_blog"], array("tag" => $params["source_tag"]))->posts;
+
+if($params["removePosts"] > 0){
+    for ($i = 0; $i < $params["removePosts"]; $i++) {
+        array_shift($allPosts);
+    }
+}
 
 foreach($allPosts as $key=>$post) {
     $publish_date = date("Y-m-d", strtotime("+ ".($key+$params["delay"])." day"));
